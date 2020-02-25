@@ -1,0 +1,31 @@
+{
+  "name": "drugou/unix-socket-example",
+  "description": "This is example unix socket",
+  "type": "project",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Pavel Adamanov",
+      "email": "drugou@yandex.ru"
+    }
+  ],
+  "minimum-stability": "dev",
+  "require": {
+    "php": "^7.4",
+    "vlucas/phpdotenv": "^3.6"
+  },
+  "config": {
+    "optimize-autoloader": true,
+    "preferred-install": "dist",
+    "sort-packages": true
+  },
+  "autoload": {
+    "psr-4": {
+      "App\\": "app/"
+    }
+  },
+  "autoload-dev": {
+  },
+  "require-dev": {
+  }
+}
