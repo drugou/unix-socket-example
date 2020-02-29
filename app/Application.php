@@ -32,12 +32,41 @@ class Application
     }
 
     /**
+     * Запускает на выполнение
+     */
+    public function execServer(): void
+    {
+        try {
+            $server = new Server();
+            $server->run();
+        } catch (\Throwable $exception) {
+            echo $exception->getMessage() . PHP_EOL;
+        }
+    }
+
+    /**
+     * Запускает на выполнение
+     */
+    public function execClient(): void
+    {
+        try {
+            $client = new Client();
+            $client->run();
+        } catch (\Throwable $exception) {
+            echo $exception->getMessage() . PHP_EOL;
+        }
+    }
+
+    /**
      * Загружает ENV файл
      */
-    protected function loadEnv(): void
+    private function loadEnv(): void
     {
         $directory = $this->getRootDir();
         $dotenv = Dotenv\Dotenv::create($directory);
+        $dotenv->load();
+        $dotenv->required('SOCKET_PATH')->notEmpty();
+        $dotenv->required('SERVER_MESSAGE_DELAY')->isInteger();
         $dotenv->load();
     }
 }

@@ -12,6 +12,8 @@
   "minimum-stability": "dev",
   "require": {
     "php": "^7.4",
+    "ext-sockets": "*",
+    "fzaninotto/faker": "^1.9@dev",
     "vlucas/phpdotenv": "^3.6"
   },
   "config": {
