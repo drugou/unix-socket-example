@@ -1,7 +1,9 @@
 <?php declare(strict_types=1);
 
 
-namespace App;
+namespace App\Server;
+
+use App\Contract\RegulatorInterface;
 
 /**
  * Class Regulator
@@ -10,7 +12,7 @@ namespace App;
  *
  * @package App
  */
-class Regulator
+class Regulator implements RegulatorInterface
 {
     /** @var int задержка */
     private int $delay;
@@ -37,11 +39,12 @@ class Regulator
         }
         $this->time = $time;
 
-        if ($time === null || $time < 0) {
-            $this->setDelay(0);
+        if ($delay === null || $delay < 0) {
+            $delay = 0;
         }
+        $this->setDelay($delay);
 
-        $this->missOne = $missOne;
+        $this->setMissOne($missOne);
     }
 
     /**
@@ -54,8 +57,7 @@ class Regulator
     }
 
     /**
-     * Проверяет, что нужная задержка уже выдержена
-     * @return bool
+     * @inheritDoc
      */
     public function check(): bool
     {
@@ -74,10 +76,9 @@ class Regulator
     }
 
     /**
-     * Обновляет время относительно которого вычислять задержку
-     * @param int|null $time Время, относительно которого вычислять задержку
+     * @inheritDoc
      */
-    public function updateTime(int $time = null): void
+    public function updateState(int $time = null): void
     {
         if ($time === null) {
             $time = $this->newTime;

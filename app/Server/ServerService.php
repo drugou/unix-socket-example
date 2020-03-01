@@ -1,8 +1,9 @@
 <?php declare(strict_types=1);
 
 
-namespace App;
+namespace App\Server;
 
+use App\Contract\ServerServiceInterface;
 use Faker\Factory;
 use Faker\Generator;
 
@@ -13,10 +14,8 @@ use Faker\Generator;
  *
  * @package App
  */
-class ServerService
+class ServerService implements ServerServiceInterface
 {
-    public const SUCCESS_MESSAGE = 'Принято';
-
     /** @var Generator фейкер */
     private Generator $faker;
 
@@ -26,8 +25,7 @@ class ServerService
     }
 
     /**
-     * Возвращает сообщение для отправки
-     * @return string сообщение
+     * @inheritDoc
      */
     public function getMessage(): string
     {
@@ -35,8 +33,7 @@ class ServerService
     }
 
     /**
-     * Возвращает задержку с которой нужно отправлять сообщения
-     * @return int задержка в секундах
+     * @inheritDoc
      */
     public function getDelay(): int
     {
@@ -50,9 +47,7 @@ class ServerService
     }
 
     /**
-     * Проверяет корректность ответа
-     * @param string $answer ответ
-     * @return bool true - если корректный ответ
+     * @inheritDoc
      */
     public function checkAnswer(string $answer): bool
     {
@@ -60,11 +55,18 @@ class ServerService
     }
 
     /**
-     * Вывод успешного получения сообщения
-     * @param string $message сообщение
+     * @inheritDoc
      */
-    public function showSuccessClientMessage(string $message): void
+    public function showSuccessMessage(string $message): void
     {
         echo "Сообщение {$message} принято клиентом" . PHP_EOL;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function showFailMessage(string $message): void
+    {
+        echo "Сообщение {$message} не принято клиентом" . PHP_EOL;
     }
 }

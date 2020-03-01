@@ -1,32 +1,26 @@
-<?php declare(strict_types=1);
+<?php
 
 
-namespace App;
+namespace App\Contract;
 
 /**
- * Class ClientService
+ * Interface ClientServiceInterface
  *
- * Сервис клиента
+ * Интерфейс сервиса клиента
  *
- * @package App
+ * @package App\Contract
  */
-class ClientService
+interface ClientServiceInterface
 {
     /**
      * Возвращает сообщение успешного извлечения сообщения
      * @return string сообщение успешного извлечения сообщения
      */
-    public function getSuccessMessage(): string
-    {
-        return ServerService::SUCCESS_MESSAGE;
-    }
+    public function getSuccessMessage(): string;
 
     /**
      * Отображает полученное сообщение
      * @param string $message сообщение
      */
-    public function showMessage(string $message): void
-    {
-        echo $message . PHP_EOL;
-    }
+    public function showMessage(string $message): void;
 }

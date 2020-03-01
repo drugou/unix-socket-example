@@ -3,6 +3,14 @@
 
 namespace App;
 
+use App\Client\Client;
+use App\Server\Regulator;
+use App\Server\Server;
+use App\Client\ClientService;
+use App\Server\ServerService;
+use App\Socket\ClientSocket;
+use App\Socket\MessageTransformer;
+use App\Socket\ServerSocket;
 use Dotenv;
 
 /**
@@ -37,7 +45,14 @@ class Application
     public function execServer(): void
     {
         try {
-            $server = new Server();
+            $messageTransformer = new MessageTransformer();
+            $communication = new ServerSocket($messageTransformer);
+            $service = new ServerService();
+
+            $regulator = new Regulator();
+            $regulator->setDelay($service->getDelay());
+
+            $server = new Server($service, $communication, $regulator);
             $server->run();
         } catch (\Throwable $exception) {
             echo $exception->getMessage() . PHP_EOL;
@@ -50,7 +65,11 @@ class Application
     public function execClient(): void
     {
         try {
-            $client = new Client();
+            $messageTransformer = new MessageTransformer();
+            $communication = new ClientSocket($messageTransformer);
+            $service = new ClientService();
+
+            $client = new Client($service, $communication);
             $client->run();
         } catch (\Throwable $exception) {
             echo $exception->getMessage() . PHP_EOL;
@@ -67,6 +86,7 @@ class Application
         $dotenv->load();
         $dotenv->required('SOCKET_PATH')->notEmpty();
         $dotenv->required('SERVER_MESSAGE_DELAY')->isInteger();
+        $dotenv->required('SOCKET_MESSAGE_SIZE')->isInteger();
         $dotenv->load();
     }
 }
