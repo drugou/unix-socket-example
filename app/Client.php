@@ -32,21 +32,12 @@ class Client
      */
     public function run(): void
     {
-        $socket = $this->socketInit();
+
         $service = new ClientService();
         $successMessage = $service->getSuccessMessage() . PHP_EOL;
         while (true) {
-            $successSocketAccept = socket_accept($socket);
-            if ($successSocketAccept === false) {
-                throw new LogicException('Не получилось выполнить ожидание сокета');
-            }
-
-            $input = socket_read($socket, 1024, PHP_NORMAL_READ);
-            if ($input === false) {
-                throw new LogicException('Не получилось прочитать сообщение клиентом');
-            }
-            $service->showMessage($input);
-            socket_write($socket, $successMessage, strlen($successMessage));
+            $socket = $this->socketInit();
+            socket_write($socket, $successMessage, 2048);
         }
     }
 

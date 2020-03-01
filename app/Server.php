@@ -5,6 +5,7 @@ namespace App;
 
 use LogicException;
 use Faker\Factory;
+use Throwable;
 
 /**
  * Class Server
@@ -28,34 +29,50 @@ class Server
 
     /**
      * Запускает сервер
-     * @throws LogicException
+     * @throws Throwable
      */
     public function run(): void
     {
         $socket = $this->socketInit();
-        $service = new ServerService();
-        $delay = $service->getDelay();
-        $regulator = new Regulator($delay);
-        $messageList = [];
-        while (true) {
-            if ($regulator->check()) {
-                $regulator->updateTime();
-                $message = $service->getMessage();
-                $messageList[] = $message;
-                socket_write($socket, $message);
-            }
+        try {
+            $service = new ServerService();
+            $delay = $service->getDelay();
+            $regulator = new Regulator($delay);
+            $messageList = [];
+            while (true) {
+//            if ($regulator->check()) {
+//                $regulator->updateTime();
+//                $message = $service->getMessage();
+//                $messageList[] = $message;
+//                $result = socket_write($socket, $message, 1024);
+//                if ($result === false) {
+//                    throw new LogicException('Не получилось отправить сообщение сервером');
+//                }
+//            }
+                $connection = socket_accept($socket);
 
-            $input = socket_read($socket, 1024, PHP_NORMAL_READ);
-            if ($input === false) {
-                throw new LogicException('Не получилось прочитать сообщение сервером');
-            }
+                if ($connection === false) {
+                    throw new LogicException('Не получилось выполнить ожидание сокета');
+                }
 
-            if ($service->checkAnswer($input)) {
-                // не очень классная идея хранить сообщения, лучше передавать идентификатор сообщения пользователем
-                $message = array_shift($messageList);
-                $service->showSuccessClientMessage($message);
+                $input = socket_read($connection, 2048);
+                if ($input === false) {
+                    throw new LogicException('Не получилось прочитать сообщение сервером');
+                }
+                var_dump($input);
+//
+//                if ($service->checkAnswer($input)) {
+//                    // не очень классная идея хранить сообщения, лучше передавать идентификатор сообщения пользователем
+////                $message = array_shift($messageList);
+//                    $message = 'test';
+//                    $service->showSuccessClientMessage($message);
+//                }
             }
+        } catch (Throwable $e) {
+            socket_close($socket);
+            throw $e;
         }
+
     }
 
     /**
@@ -75,6 +92,11 @@ class Server
         if (!$successBind) {
             throw new LogicException('Не получилось задать адресс сокету');
         }
+//        $resultNoBlock = socket_set_nonblock($socket);
+//        if (!$resultNoBlock) {
+//            throw new LogicException('Не получилось установить не блокирующий режим');
+//        }
+
         $successListen = socket_listen($socket);
         if (!$successListen) {
             throw new LogicException('Не получилось подключиться к сокету');

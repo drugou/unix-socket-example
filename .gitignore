@@ -1,3 +1,4 @@
 /vendor
 /.env
 /.idea
+/unix_socket_example.sock
