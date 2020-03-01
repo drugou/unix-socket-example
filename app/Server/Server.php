@@ -30,6 +30,7 @@ class Server
      * Server constructor.
      * @param ServerServiceInterface $serverService Сервис сервера
      * @param ServerCommunicationInterface $communication Сервис для связи
+     * @param RegulatorInterface $regulator регулятор
      */
     public function __construct(
         ServerServiceInterface $serverService,
@@ -50,20 +51,22 @@ class Server
     {
         $this->communication->init();
         while (true) {
-            if ($this->regulator->check()) {
-                $this->regulator->updateState();
-
-                $message = $this->serverService->getMessage();
-
-                $this->communication->send($message);
-                $answer = $this->communication->receive();
-                if ($this->serverService->checkAnswer($answer)) {
-                    $this->serverService->showSuccessMessage($message);
-                } else {
-                    $this->serverService->showFailMessage($message);
-                }
+            if (!$this->regulator->check()) {
+                sleep(1);
+                continue;
             }
-            sleep(1);
+
+            $this->regulator->updateState();
+
+            $message = $this->serverService->getMessage();
+            $this->communication->send($message);
+
+            $answer = $this->communication->receive();
+            if ($this->serverService->checkAnswer($answer)) {
+                $this->serverService->showSuccessMessage($message);
+            } else {
+                $this->serverService->showFailMessage($message);
+            }
         }
     }
 }
